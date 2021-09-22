@@ -1,0 +1,161 @@
+<html>
+    <head>
+        <title>Ping pong</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+     
+        <link rel="stylesheet" href="style.css">
+        <script src="https://unpkg.com/ml5@0.4.3/dist/ml5.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.0.0/p5.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.0.0/addons/p5.sound.min.js"></script>   
+    </head>
+    <body background="background1.jpg">
+        <center>
+
+            <div class="btn btn-warning heading">
+              <h3>AI PING PONG GAME </h3>
+              <button class="btn btn-warning"  data-toggle="modal" data-target="#myModal">Instruction</button>
+            </div>
+      
+            <br><br>
+            <button class="btn btn-success" onclick="startGame()" id="start">Play Game</button>
+            <br><br>
+            <h3 id="status" class="btn btn-default"></h3>
+            <br><br>
+            <div id="canvas"></div>
+            <br><br>
+            <button onclick="restart()" class="btn btn-danger" id="restart">Restart</button>
+            <br><br>
+            
+            <h4>Developed By : WhitehatJr Team</h4>
+        
+            <div id="myModal" class="modal fade ">
+              <div class="modal-dialog" >
+             
+                <div class="modal-content">
+            
+                  <div class="modal-header">
+                    <button class="close" data-dismiss="modal">&times;</button>
+                    <h3>Instructions</h#>
+                  </div>
+            
+                   <div class="modal-body">
+                       <ol>
+                           <li>First keep your laptop screen straight</li>
+                           <li>Move yourself approximately 3-4 feet away from the laptop</li>
+                           <li>Move your right wrist in an ascending and decending manner, a red dot should appear on your right wrist</li>
+                           <li>Now press the play button, and again move yourself 3-4 feet away from laptop</li>
+                           <li>The red paddel is your paddel, that will move as per the movement of your right wrist</li>
+                       </ol>
+                    </div>
+      
+                </div>
+              </div>
+            </div>
+      </center>
+</body>
+</html>
+
+<script>
+
+function parent(){
+var canvas =  createCanvas(700,600);
+canvas.parent('canvas');
+
+video = createCapture(VIDEO);
+video.size(700, 600);
+video.hide();
+
+poseNet = ml5.poseNet(video, modelLoaded);
+poseNet.on('pose', gotPoses);
+}
+
+function modelLoaded() {
+  console.log('PoseNet Is Initialized');
+}
+
+
+function gotPoses(results)
+{
+  if(results.length > 0)
+  {
+
+    rightWristY = results[0].pose.rightWrist.y;
+    rightWristX = results[0].pose.rightWrist.x;
+    scoreRightWrist =  results[0].pose.keypoints[10].score;
+    console.log(scoreRightWrist);
+  }
+}
+function draw(){
+
+background(0); 
+image(video, 0, 0, 700, 600);
+
+fill("black");
+stroke("black");
+rect(680,0,20,700);
+
+fill("black");
+stroke("black");
+rect(0,0,20,700);
+
+if(scoreRightWrist > 0.2)
+{
+  fill("red");
+  stroke("red");
+  circle(rightWristX, rightWristY, 30);
+}
+}
+
+function startGame()
+{
+  game_status = "start";
+  document.getElementById("status").innerHTML = "Game Is Loading";
+}
+
+</script>
+
+<style>
+  .heading
+{
+width: 100%;
+text-align: left;
+}
+.heading h3{
+    display: inline;
+}
+
+.heading button{
+    float: right;
+    border: 1px solid white;
+}
+
+#start ,#status, #restart
+{
+font-size: 22px;
+}
+
+.modal-dialog
+{
+    width: 70%;
+}
+.modal-body
+{
+    text-align: left;
+    font-size: 20px;
+}
+h4
+{
+   background-color: grey;
+   color:white;
+   line-height: 2;
+}
+canvas 
+  {
+      border:3px solid white;
+      border-radius: 20px;
+      box-shadow:  5px 5px 5px white;
+  }
+</style>
